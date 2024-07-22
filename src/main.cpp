@@ -1,8 +1,8 @@
-#include <iostream>
+#include "main.hpp"
 
-int main(void)
+int main(int argc, char **argv)
 {
-  std::cout << "Hello Word !";
-
+  printf("sizeof(ITEM_VENDA) = %ld\n", sizeof(ITEM_VENDA));
+  gerar_array_iv("teste.dat", 512000, 42);
   return 0;
 }
