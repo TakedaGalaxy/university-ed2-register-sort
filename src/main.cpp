@@ -1,5 +1,88 @@
 #include "main.hpp"
 
+// Função auxiliar para trocar dois elementos
+template <typename T>
+void swap(T* a, T* b)
+{
+    T temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Função que realiza a partição e retorna o índice do pivô
+template <typename T>
+int partition(T arr[], int low, int high)
+{
+    T pivot = arr[high];  // Escolhe o último elemento como pivô
+    int i = (low - 1);    // Índice do menor elemento
+
+    for (int j = low; j < high; j++)
+    {
+        // Se o elemento atual é menor ou igual ao pivô
+        if (arr[j] <= pivot)
+        {
+            i++;  // Incrementa o índice do menor elemento
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return (i + 1);
+}
+
+// Função principal do Quick Sort
+template <typename T>
+void quickSort(T arr[], int low, int high)
+{
+    if (low < high)
+    {
+        // Índice de partição
+        int pi = partition(arr, low, high);
+
+        // Ordena os elementos antes e depois da partição
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+
+template <typename T>
+uint64_t segmentAndSort(std::string path, uint64_t blockSizeBytes)
+{
+  auto inputFile = fopen(path.c_str(), "rb");
+
+  uint64_t nRecords = blockSizeBytes / sizeof(T);
+
+  std::cout << "n = " << nRecords << std::endl;
+
+  auto records = new T[nRecords];
+
+  uint64_t i = 0;
+
+  while (1)
+  {
+    auto nRead = fread(records, sizeof(T), nRecords, inputFile);
+
+    if (nRead <= 0)
+      break;
+
+    quickSort<ITEM_VENDA>(records, 0, nRead);
+
+    std::string pathOutFile = "./p" + std::to_string(i) + ".bin";
+
+    auto outFile = fopen(pathOutFile.c_str(), "wb");
+
+    fwrite(records, sizeof(T), nRead, outFile);
+
+    fclose(outFile);
+
+    i++;
+  }
+
+  fclose(inputFile);
+
+  return i;
+}
+
 int main(int argc, char **argv)
 {
 
@@ -74,7 +157,7 @@ int main(int argc, char **argv)
 
   if (command == "-s" || command == "sort")
   {
-    if (argc < 3 || argc > 4)
+    if (argc < 3 || argc > 5)
     {
       std::cout << "Invalid parameters !";
       return 0;
@@ -82,27 +165,12 @@ int main(int argc, char **argv)
 
     std::string path = argv[2];
 
-    ITEM_VENDA *item = new ITEM_VENDA;
+    std::string bytesToUse = argv[3];
+    std::string outputBuzzerSize = argv[4];
 
-    std::cout << "Reading !" << std::endl;
+    auto nBlocks = segmentAndSort<ITEM_VENDA>(path, atoll(bytesToUse.c_str()));
 
-    auto file = fopen(path.c_str(), "rb");
-
-    if (file == nullptr)
-    {
-      std::cout << "Failed to open file !";
-      return 0;
-    }
-
-    while (fread(item, sizeof(ITEM_VENDA), 1, file) == 1)
-    {
-      std::cout << "ITEM:" << std::endl;
-      std::cout << item->id << std::endl;
-      std::cout << item->desc << std::endl;
-      std::cout << "END" << std::endl;
-    }
-
-    fclose(file);
+    std::cout << "nBLOCKS = " << nBlocks << std::endl;
 
     return 1;
   }
