@@ -14,6 +14,11 @@ struct ITEM_VENDA
 	{
 		return id <= other.id;
 	}
+
+	bool operator>=(const ITEM_VENDA other)
+	{
+		return id >= other.id;
+	}
 };
 
 void gerar_array_iv(const char *arquivo_saida, unsigned int n_registros, int seed);
