@@ -1,6 +1,14 @@
 #pragma once
 
 #include <iostream>
+#include <cstdint>
+
+#include "../file-buffer/file-buffer-in.hpp"
+#include "../file-buffer/file-buffer-out.hpp"
+#include "../quick-sort/quick-sort.hpp"
+#include "../file-generator/big-file.h"
+
+void removeSegments(uint64_t nBlocks);
 
 struct ReturnGetIndexNextMin
 {
@@ -35,7 +43,12 @@ ReturnGetIndexNextMin getIndexNextMin(FileBufferIn<T> *buffers, uint64_t n)
     minItem = buffers[i].viewNext();
   }
 
-  return {iMin, isAllEmpty};
+  ReturnGetIndexNextMin returnValue;
+
+  returnValue.index = iMin;
+  returnValue.isAllEmpty = isAllEmpty;
+
+  return returnValue;
 };
 
 template <typename T>
@@ -43,9 +56,12 @@ uint64_t segmentAndSort(std::string path, uint64_t blockSizeBytes)
 {
   auto inputFile = fopen(path.c_str(), "rb");
 
+  if (inputFile == NULL)
+    return 0;
+
   uint64_t nRecords = blockSizeBytes / sizeof(T);
 
-  std::cout << "n = " << nRecords << std::endl;
+  std::cout << "nBlock = " << nRecords << std::endl;
 
   auto records = new T[nRecords];
 
@@ -58,7 +74,7 @@ uint64_t segmentAndSort(std::string path, uint64_t blockSizeBytes)
     if (nRead <= 0)
       break;
 
-    quickSort<ITEM_VENDA>(records, 0, nRead);
+    quickSort<ITEM_VENDA>(records, 0, nRead - 1);
 
     std::string pathOutFile = "./p" + std::to_string(i) + ".bin";
 

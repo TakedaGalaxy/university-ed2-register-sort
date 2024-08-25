@@ -60,35 +60,33 @@ int commandConvertFileToTxt(int argc, char **argv)
 
 int commandSortFile(int argc, char **argv)
 {
-  if (argc < 3 || argc > 5)
+  if (argc < 3 || argc > 6)
   {
     std::cout << "Invalid parameters !";
     return 1;
   }
 
-  std::string path = argv[2];
-
+  std::string pathInFile = argv[2];
   std::string bytesToUse = argv[3];
   std::string outputBuzzerSize = argv[4];
+  std::string pathOutFile = argv[5];
 
-  auto nBlocks = segmentAndSort<ITEM_VENDA>(path, atoll(bytesToUse.c_str()));
+  auto nBlocks = segmentAndSort<ITEM_VENDA>(pathInFile, atoll(bytesToUse.c_str()));
 
   void *memory = operator new[](sizeof(FileBufferIn<ITEM_VENDA>) * nBlocks);
 
   FileBufferIn<ITEM_VENDA> *bufffers = static_cast<FileBufferIn<ITEM_VENDA> *>(memory);
 
-  uint64_t sizeBuffer = atoll(bytesToUse.c_str()) / nBlocks;
+  uint64_t sizeBuffer = (atoll(bytesToUse.c_str()) - atoll(outputBuzzerSize.c_str())) / nBlocks;
 
   for (int i = 0; i < nBlocks; i++)
   {
     std::string path = "./p" + std::to_string(i) + ".bin";
 
     new (&bufffers[i]) FileBufferIn<ITEM_VENDA>(path, sizeBuffer);
-
-    std::cout << i << " " << bufffers[i].getNext().id << std::endl;
   }
 
-  auto bufferOut = FileBufferOut<ITEM_VENDA>("text.bin", atoll(outputBuzzerSize.c_str()));
+  auto bufferOut = FileBufferOut<ITEM_VENDA>(pathOutFile, atoll(outputBuzzerSize.c_str()));
 
   while (true)
   {
@@ -110,6 +108,8 @@ int commandSortFile(int argc, char **argv)
   }
 
   bufferOut.~FileBufferOut();
+
+  removeSegments(nBlocks);
 
   return 0;
 }
