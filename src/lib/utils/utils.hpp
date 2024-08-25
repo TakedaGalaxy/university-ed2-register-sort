@@ -61,8 +61,6 @@ uint64_t segmentAndSort(std::string path, uint64_t blockSizeBytes)
 
   uint64_t nRecords = blockSizeBytes / sizeof(T);
 
-  std::cout << "nBlock = " << nRecords << std::endl;
-
   auto records = new T[nRecords];
 
   uint64_t i = 0;

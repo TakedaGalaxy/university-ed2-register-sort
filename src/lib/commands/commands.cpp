@@ -86,7 +86,7 @@ int commandSortFile(int argc, char **argv)
     new (&bufffers[i]) FileBufferIn<ITEM_VENDA>(path, sizeBuffer);
   }
 
-  auto bufferOut = FileBufferOut<ITEM_VENDA>(pathOutFile, atoll(outputBuzzerSize.c_str()));
+  FileBufferOut<ITEM_VENDA> bufferOut = FileBufferOut<ITEM_VENDA>(pathOutFile, atoll(outputBuzzerSize.c_str()));
 
   while (true)
   {
@@ -103,11 +103,9 @@ int commandSortFile(int argc, char **argv)
   bufferOut.save();
 
   for (int i = 0; i < nBlocks; i++)
-  {
     bufffers[i].~FileBufferIn();
-  }
 
-  bufferOut.~FileBufferOut();
+  operator delete[](bufffers);
 
   removeSegments(nBlocks);
 

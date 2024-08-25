@@ -13,13 +13,27 @@ public:
   FileBufferOut(std::string path, uint64_t bufferSize)
   {
     this->file = fopen(path.c_str(), "wb");
+    if (this->file == nullptr)
+    {
+      throw std::runtime_error("Failed to open file for writing.");
+    }
+
     this->bufferSize = bufferSize / sizeof(T);
     this->buffer = new T[this->bufferSize];
+    if (this->buffer == nullptr)
+    {
+      fclose(this->file);
+      throw std::bad_alloc();
+    }
   }
 
   ~FileBufferOut()
   {
-    fclose(this->file);
+    if (this->file)
+    {
+      fclose(this->file);
+    }
+
     delete[] this->buffer;
   }
 
