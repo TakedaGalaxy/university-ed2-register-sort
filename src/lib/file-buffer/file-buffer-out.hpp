@@ -13,10 +13,8 @@ public:
   FileBufferOut(std::string path, uint64_t bufferSize)
   {
     this->file = fopen(path.c_str(), "wb");
-    if (this->file == nullptr)
-    {
+    if (this->file == NULL)
       throw std::runtime_error("Failed to open file for writing.");
-    }
 
     this->bufferSize = bufferSize / sizeof(T);
     this->buffer = new T[this->bufferSize];

@@ -1,6 +1,5 @@
 #pragma once
 
-// Função auxiliar para trocar dois elementos
 template <typename T>
 void swap(T *a, T *b)
 {
@@ -9,7 +8,6 @@ void swap(T *a, T *b)
   *b = temp;
 }
 
-// Função que realiza a partição e retorna o índice do pivô
 template <typename T>
 int partition(T arr[], int low, int high)
 {
@@ -29,7 +27,6 @@ int partition(T arr[], int low, int high)
   return (i + 1);
 }
 
-// Função principal do Quick Sort
 template <typename T>
 void quickSort(T arr[], int low, int high)
 {

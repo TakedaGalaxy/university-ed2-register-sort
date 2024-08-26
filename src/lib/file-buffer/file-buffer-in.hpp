@@ -32,17 +32,22 @@ public:
     this->file = fopen(path.c_str(), "rb");
 
     if (this->file == NULL)
-      throw "Error on open file";
+      throw std::runtime_error("Failed to open file for reading.");
 
     this->bufferSize = bufferSize / sizeof(T);
     this->buffer = new T[this->bufferSize];
+    
+    if (this->buffer == nullptr)
+    {
+      fclose(this->file);
+      throw std::bad_alloc();
+    }
 
     this->storeNextBlock();
   }
 
   T viewNext()
   {
-    // Pode estar vazio
     return this->buffer[this->currentIndex];
   }
 
